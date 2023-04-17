@@ -4,8 +4,9 @@
 
 from typing import Optional, List
 
-from fastapi import APIRouter, status, Form, File, UploadFile, HTTPException
+from fastapi import APIRouter, Response, status, Form, File, UploadFile, HTTPException
 from pydantic import BaseModel, EmailStr
+from starlette.requests import Request
 
 app04 = APIRouter()
 
@@ -61,9 +62,9 @@ async def response_model_attributes(user: UserIn):
 """Response Status Code 响应状态码"""
 
 
-@app04.post("/status_code", status_code=200)
+@app04.post("/status_code", status_code=204)
 async def status_code():
-    return {"status_code": 200}
+    return {"status_code": 204}
 
 
 @app04.post("/status_attribute", status_code=status.HTTP_200_OK)
@@ -82,6 +83,20 @@ async def login(username: str = Form(...), password: str = Form(...)):  # 定义
 
 
 """Request Files 单文件、多文件上传及参数详解"""
+
+from fastapi import FastAPI
+from starlette.requests import Request
+
+app = FastAPI()
+
+#see https://github.com/tiangolo/fastapi/issues/58
+@app04.post("/file-chunk")
+async def create_file(request: Request):
+    body = b''
+    async for chunk in request.stream():
+        body += chunk
+    response = Response(body, media_type='text/plain')
+    return response
 
 
 @app04.post("/file")
