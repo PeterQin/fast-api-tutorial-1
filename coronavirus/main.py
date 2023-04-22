@@ -104,7 +104,7 @@ def sync_coronavirus_data(background_tasks: BackgroundTasks, db: Session = Depen
     return {"message": "正在后台同步数据..."}
 
 
-@application.get("/")
+@application.get("")
 def coronavirus(request: Request, city: str = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     data = crud.get_data(db, city=city, skip=skip, limit=limit)
     return templates.TemplateResponse("home.html", {

@@ -56,7 +56,6 @@ async def classes_as_dependencies(commons=Depends(CommonQueryParams)):
 def query(q: Optional[str] = None):
     return q
 
-
 def sub_query(q: str = Depends(query), last_query: Optional[str] = None):
     if not q:
         return last_query
