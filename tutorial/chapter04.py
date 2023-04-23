@@ -152,7 +152,7 @@ async def path_operation_configuration(user: UserIn):
 
 @app04.get("/http_exception")
 async def http_exception(city: str):
-    if city != "Beijing":
+    if city.lower() != "Beijing".lower():
         raise HTTPException(status_code=404, detail="City not found!", headers={"X-Error": "Error"})
     return {"city": city}
 

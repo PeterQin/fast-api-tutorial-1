@@ -2,8 +2,9 @@
 # -*- coding:utf-8 -*-
 # __author__ = '__Jack__'
 
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
+import json
 from typing import Optional, List
 
 from fastapi import APIRouter, Query, Path, Body, Cookie, Header
@@ -82,6 +83,9 @@ class CityInfo(BaseModel):
     country_code: str = None  # 给一个默认值
     country_population: int = Field(default=800, title="人口数量", description="国家的人口数量", ge=800)
 
+    def test(x: str):
+        pass
+
     class Config:
         schema_extra = {
             "example": {
@@ -93,7 +97,7 @@ class CityInfo(BaseModel):
         }
 
 
-@app03.post("/request_body/city")
+@app03.post("/request_body/city", response_model=CityInfo)
 def city_info(city: CityInfo):
     print(city.name, city.country)  # 当在IDE中输入city.的时候，属性会自动弹出
     return city.dict()
@@ -121,7 +125,11 @@ def body_multiple_parameters(
     confirmed: int = Query(ge=0, description="确诊数", default=0),
     death: int = Query(ge=0, description="死亡数", default=0),
 ):
+    city.test()
     print(f"{city.name} 确诊数：{confirmed} 死亡数：{death}")
+    print(city.dict())
+    cityJson1 = json.dumps(city.dict())
+    print(cityJson1)
     return city.dict()
 
 
@@ -131,6 +139,7 @@ def body_multiple_parameters(
 class Data(BaseModel):
     city: List[CityInfo] = None  # 这里就是定义数据格式嵌套的请求体
     date: date  # 额外的数据类型，还有uuid datetime bytes frozenset等，参考：https://fastapi.tiangolo.com/tutorial/extra-data-types/
+    updatedAt: datetime
     confirmed: int = Field(ge=0, description="确诊数", default=0)
     deaths: int = Field(ge=0, description="死亡数", default=0)
     recovered: int = Field(ge=0, description="痊愈数", default=0)
@@ -150,6 +159,17 @@ def cookie(cookie_id: Optional[str] = Cookie(None)):  # 定义Cookie参数需要
 
 
 @app03.get("/header")
+def header(userAgent: Optional[str] = Header(None, convert_underscores=False, alias="User-Agent"), xToken: List[str] = Header(None, alias="X-Token")):
+    """
+    有些HTTP代理和服务器是不允许在请求头中带有下划线的，所以Header提供convert_underscores属性让设置
+    :param user_agent: convert_underscores=True 会把 user_agent 变成 user-agent
+    :param x_token: x_token是包含多个值的列表
+    :return:
+    """
+    return {"userAgent": userAgent, "xToken": xToken}
+
+
+@app03.get("/header2")
 def header(user_agent: Optional[str] = Header(None, convert_underscores=True), x_token: List[str] = Header(None)):
     """
     有些HTTP代理和服务器是不允许在请求头中带有下划线的，所以Header提供convert_underscores属性让设置
