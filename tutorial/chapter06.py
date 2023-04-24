@@ -32,8 +32,8 @@ async def oauth2_password_bearer(token: str = Depends(oauth2_schema)):
 """基于 Password 和 Bearer token 的 OAuth2 认证"""
 
 fake_users_db = {
-    "john snow": {
-        "username": "john snow",
+    "john": {
+        "username": "john",
         "full_name": "John Snow",
         "email": "johnsnow@example.com",
         "hashed_password": "fakehashedsecret",
@@ -112,11 +112,11 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 """OAuth2 with Password (and hashing), Bearer with JWT tokens 开发基于JSON Web Tokens的认证"""
 
 fake_users_db.update({
-    "john snow": {
-        "username": "john snow",
+    "john": {
+        "username": "john",
         "full_name": "John Snow",
         "email": "johnsnow@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+        "hashed_password": "$2b$12$R/8z8LUHbwudFJZkVjo1sOPOBXNGnqM4/k961o1dkKjhUmZ/QY5Di",
         "disabled": False,
     }
 })
@@ -139,6 +139,7 @@ oauth2_schema = OAuth2PasswordBearer(tokenUrl="/chapter06/jwt/token")
 
 def verity_password(plain_password: str, hashed_password: str):
     """对密码进行校验"""
+    hashedPwd = pwd_context.hash(plain_password)
     return pwd_context.verify(plain_password, hashed_password)
 
 

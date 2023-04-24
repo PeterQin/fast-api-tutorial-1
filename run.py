@@ -29,7 +29,7 @@ app = FastAPI(
 # mount表示将某个目录下一个完全独立的应用挂载过来，这个不会在API交互文档中显示
 app.mount(path='/static', app=StaticFiles(directory='./coronavirus/static'), name='static')  # .mount()不要在分路由APIRouter().mount()调用，模板会报错
 
-
+# fastapi by default will have exception handler
 @app.exception_handler(StarletteHTTPException)  # 重写HTTPException异常处理器
 async def http_exception_handler(request, exc: StarletteHTTPException):
     """
@@ -42,8 +42,8 @@ async def http_exception_handler(request, exc: StarletteHTTPException):
     # return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
     # jsonRaw = json.dumps({"error": exc.detail, "time": utcNow})
     
-    return JSONResponse({"error": exc.detail, "time": utcNow.isoformat()})
-#
+    return JSONResponse({"customErrorDetail": exc.detail, "time": utcNow.isoformat()}, status_code=exc.status_code)
+
 #
 # @app.exception_handler(RequestValidationError)  # 重写请求验证异常处理器
 # async def validation_exception_handler(request, exc):

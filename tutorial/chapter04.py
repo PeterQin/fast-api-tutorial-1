@@ -84,10 +84,10 @@ async def login(username: str = Form(...), password: str = Form(...)):  # 定义
 
 """Request Files 单文件、多文件上传及参数详解"""
 
-from fastapi import FastAPI
-from starlette.requests import Request
+# from fastapi import FastAPI
+# from starlette.requests import Request
 
-app = FastAPI()
+# app = FastAPI()
 
 #see https://github.com/tiangolo/fastapi/issues/58
 @app04.post("/file-chunk")
@@ -115,10 +115,13 @@ async def upload_files(files: List[UploadFile] = File(...)):  # 如果要上传�
     4.有文件对象的异步接口
     5.上传的文件是Python文件对象，可以使用write(), read(), seek(), close()操作
     """
+    uploadedFiles = []
     for file in files:
         contents = await file.read()
         print(contents)
-    return {"filename": files[0].filename, "content_type": files[0].content_type}
+        uploadedFiles.append({"filename": file.filename, "content_type": file.content_type})
+    
+    return uploadedFiles
 
 
 """【见run.py】FastAPI项目的静态文件配置"""
